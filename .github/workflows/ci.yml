@@ -1,0 +1,26 @@
+name: CI
+on:
+ push:
+   branches: [main]
+Jobs:
+   
+build:
+  runs-on: ubuntu-latest
+  steps:
+    -uses: actions/checkout@V4
+cat>.github/workflows/ci.yml<<'YAML'
+name: CI
+on:
+ push:
+   branches: [main]
+Jobs:
+   
+build:
+  runs-on: ubuntu-latest
+  steps:
+jobs:
+ runs-on: ubuntun-latest
+ steps:
+   - uses: actions/checkut@v4
+   - name: Run tests
+     run: pytest
