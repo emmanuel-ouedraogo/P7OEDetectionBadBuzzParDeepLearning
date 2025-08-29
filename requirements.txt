@@ -1,35 +1,13 @@
-# Core Data Science & ML libraries
-pandas
+# Dépendances communes
 numpy
-scikit-learn
+requests
+python-dotenv
 
-# Deep Learning & NLP
+# Dépendances pour l'API (Backend)
+fastapi
+uvicorn
+gunicorn
 tensorflow
-transformers
-datasets
-scikit-learn
-fasttext
-tqdm
 
-# Explication du code
-# Ce code utilise plusieurs bibliothèques pour le traitement du langage naturel et l'apprentissage automatique.
-lime
-shap
-
-# Additional Libraries
-nltk
-spacy
-gensim
-
-# Visualization
-matplotlib
-seaborn
-
-# suvi des métrics
-mlflow
-pyngrok
-
-
-
-# Testing
-pytest
+# Dépendances pour l'interface (Frontend)
+streamlit
