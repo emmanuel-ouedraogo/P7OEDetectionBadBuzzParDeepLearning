@@ -11,3 +11,6 @@ tensorflow
 
 # Dépendances pour l'interface (Frontend)
 streamlit
+
+# Dépendances pour les tests
+pytest

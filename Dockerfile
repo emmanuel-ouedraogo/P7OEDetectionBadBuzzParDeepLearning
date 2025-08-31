@@ -1,27 +1,45 @@
-# Utiliser une image Python officielle comme image de base.
-# python:3.9-slim est une bonne option, légère et stable, qui correspond aux prérequis.
-FROM python:3.9-slim
+# --- Étape 1: Le "Builder" ---
+# Cette étape installe les dépendances dans un environnement isolé.
+FROM python:3.9-slim as builder
 
-# Définir le répertoire de travail dans le conteneur
+# Définir les variables d'environnement pour Python
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 WORKDIR /app
 
-# Copier le fichier des dépendances
-# Il est copié en premier pour profiter du cache de Docker.
-# Les dépendances ne seront réinstallées que si ce fichier change.
-COPY requirements.txt .
-
 # Installer les dépendances
+COPY requirements-api.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements-api.txt
 
-# Copier le code de l'application dans le conteneur.
-COPY ./api.py /app/api.py
 
-# Exposer le port sur lequel l'API va tourner (8000 est le standard pour FastAPI)
-EXPOSE 8000
+# --- Étape 2: L'image finale ---
+# Cette étape construit l'image de production finale, plus légère et sécurisée.
+FROM python:3.9-slim
 
-# Commande pour lancer l'application avec Gunicorn et Uvicorn pour la production
-# -w 4: lance 4 "worker processes". Un bon point de départ est (2 * CPU cores) + 1.
-# -k uvicorn.workers.UvicornWorker: spécifie d'utiliser les workers Uvicorn.
-# --bind 0.0.0.0:8000: écoute sur toutes les interfaces réseau sur le port 8000.
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "api:app", "--bind", "0.0.0.0:8000"]
+# Définir les mêmes variables d'environnement
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PORT 8080
+
+# Créer un utilisateur non-root pour des raisons de sécurité
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+# Définir le répertoire de travail pour l'utilisateur non-root
+WORKDIR /home/appuser
+
+# Copier les dépendances installées depuis l'étape "builder"
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copier le code de l'application et donner les permissions à notre utilisateur
+COPY api.py .
+RUN chown -R appuser:appgroup /home/appuser
+
+# Changer d'utilisateur pour ne plus être root
+USER appuser
+
+# Exposer le port et lancer l'application
+EXPOSE 8080
+CMD exec gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT api:app

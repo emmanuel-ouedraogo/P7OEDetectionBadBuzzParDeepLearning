@@ -1,0 +1,8 @@
+# Dépendances spécifiques à l'API pour le conteneur Docker
+numpy
+requests
+python-dotenv
+fastapi
+uvicorn
+gunicorn
+tensorflow-cpu

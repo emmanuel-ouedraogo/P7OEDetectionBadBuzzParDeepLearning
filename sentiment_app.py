@@ -121,7 +121,6 @@ h1 {
 </style>""", unsafe_allow_html=True)
 
 
-
 # --- INTERFACE PRINCIPALE DE L'APPLICATION ---
 
 st.title("🎭 Analyseur de Sentiment")
@@ -133,8 +132,9 @@ st.markdown(
 
 # --- API Configuration ---
 # Lit l'URL de l'API depuis une variable d'environnement, avec une valeur par défaut pour le local
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict/")
-
+#API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict/")
+#API_URL="https://deploiement-783259175753.europe-west1.run.app/predict/"
+API_URL="https://badbuzzdetector-783259175753.europe-west9.run.app/predict/"
 # Utilisation d'un formulaire pour regrouper le champ de texte et le bouton
 with st.form(key='sentiment_form'):
     user_input = st.text_area(
